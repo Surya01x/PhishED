@@ -126,7 +126,7 @@ PhishED/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/PhishED.git
+git clone https://github.com/Surya01x/PhishED.git
 ```
 
 ### 2. Move Project to XAMPP
@@ -219,7 +219,15 @@ http://localhost/PhishED/index.php
 
 - Simulations <img width="1902" height="1073" alt="image" src="https://github.com/user-attachments/assets/ddc1135f-1508-4b14-89e4-cc83e598152e" />
 
+- E-mail Phishing Simulation <img width="1918" height="1078" alt="image" src="https://github.com/user-attachments/assets/ac6dad9f-44bf-477b-8d90-e86bea5cca03" />
+
+- Smsishing Simulation <img width="1918" height="1078" alt="image" src="https://github.com/user-attachments/assets/030adce7-0a80-4f1b-840c-d68336c236b7" />
+
+-Camera Access Simulation <img width="1918" height="1078" alt="image" src="https://github.com/user-attachments/assets/218a5dcd-0b39-4f24-9766-72e0a651237c" />
+
+
 - Quiz <img width="1900" height="1077" alt="image" src="https://github.com/user-attachments/assets/bf36eb39-38ee-4461-9f11-9ef867ad3ea4" />
+
 
 - Learn Page <img width="1901" height="1077" alt="image" src="https://github.com/user-attachments/assets/0a70c53e-584f-4104-ab4a-64daf53647ed" />
 
