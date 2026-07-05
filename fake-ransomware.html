@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>!!! CRITICAL SYSTEM FAILURE !!!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+     body {
+      font-family: 'Courier New', monospace;
+      background-color: #0d0d0d;  
+      color: #ff0000;  
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+      box-sizing: border-box;
+      overflow: hidden;  
+       position: relative;  
+    }
+
+     main {
+      text-align: center;
+      width: 100%;
+      max-width: 900px;  
+      padding: 1rem;
+      z-index: 10;  
+      position: relative;
+    }
+
+    h1 {
+      font-size: 3.5rem;  
+      font-weight: bold;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 15px #ff0000;  
+      animation: text-flicker 0.08s infinite alternate;  
+    }
+
+    p {
+      font-size: 1.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .bitcoin-address {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #00ff00;  
+      text-shadow: 0 0 10px #00ff00;
+      margin-bottom: 2rem;
+      animation: text-flicker-green 0.08s infinite alternate;
+    }
+
+    .timer {
+      font-size: 4rem;
+      font-weight: bold;
+      margin: 2rem 0;
+      animation: pulse-red 0.8s infinite alternate;  
+      color: #ff0000;
+    }
+
+    .warning-text {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ffcc00; 
+      animation: blink 0.5s step-end infinite; 
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .action-button {
+      padding: 1.25rem 2.5rem;
+      border-radius: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    }
+
+    .action-button:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+    }
+
+    .btn-decrypt {
+      background-color: #dc2626; 
+      color: white;
+      border: 2px solid #b91c1c;
+    }
+    .btn-decrypt:hover {
+      background-color: #b91c1c;
+    }
+
+    .btn-learn {
+      background-color: #facc15; 
+      color: #1a202c; 
+      border: 2px solid #d97706;
+    }
+    .btn-learn:hover {
+      background-color: #d97706;
+    }
+
+    .glitch-overlay {
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(255, 0, 0, 0.08), 
+        rgba(0, 255, 0, 0.08) 1px, 
+        rgba(0, 0, 255, 0.08) 2px, 
+        transparent 3px,
+        transparent 5px
+      );
+      animation: scan-line 0.3s infinite linear alternate; 
+      z-index: 5;
+      pointer-events: none; 
+    }
+
+    #system-locked-message {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 3rem;
+        font-weight: bold;
+        color: #ff0000;
+        text-shadow: 0 0 20px #ff0000;
+        background-color: rgba(0,0,0,0.8);
+        padding: 1rem 2rem;
+        border: 3px solid #ff0000;
+        border-radius: 10px;
+        z-index: 1000;
+        display: none;
+        animation: text-flicker 0.05s infinite alternate;
+    }
+
+    .deletion-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.95); 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #00ff00;
+      font-size: 1.5rem;
+      z-index: 1001; 
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    }
+    .deletion-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .deletion-overlay p {
+      margin-bottom: 0.5rem;
+      animation: text-flicker-green 0.08s infinite alternate;
+    }
+    .deletion-overlay .progress-bar-deletion {
+      width: 80%;
+      max-width: 600px;
+      height: 25px; 
+      background-color: #333;
+      border: 2px solid #00ff00;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 1rem;
+    }
+    .deletion-overlay .progress-fill {
+      width: 0%;
+      height: 100%;
+      background-color: #00ff00;
+      transition: width 0.05s linear; 
+    }
+
+
+    .local-feedback-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.95); 
+      align-items: center;
+      justify-content: center;
+      z-index: 1002; 
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .local-feedback-modal-overlay.show {
+      display: flex;
+      opacity: 1;
+    }
+    .local-feedback-modal-content {
+      background: #1a202c; 
+      color: #e2e8f0;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      max-width: 90%;
+      width: 450px;
+      text-align: center;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+      border: 3px solid #ff0000; 
+    }
+    .local-feedback-modal-overlay.show .local-feedback-modal-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .local-feedback-modal-content .title-phish {
+      color: #ffcc00; 
+    }
+    .local-feedback-modal-content .title-good {
+      color: #48bb78; 
+    }
+
+    @keyframes text-flicker {
+      0%, 100% { opacity: 1; filter: brightness(1); }
+      50% { opacity: 0.8; filter: brightness(1.2); }
+    }
+    @keyframes text-flicker-green {
+      0%, 100% { opacity: 1; filter: brightness(1); }
+      50% { opacity: 0.7; filter: brightness(1.1); }
+    }
+    @keyframes pulse-red {
+      0% { transform: scale(1); text-shadow: 0 0 15px #ff0000; }
+      50% { transform: scale(1.03); text-shadow: 0 0 25px #ff0000; }
+      100% { transform: scale(1); text-shadow: 0 0 15px #ff0000; }
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+    @keyframes scan-line {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 0% 100%; }
+    }
+    @keyframes screen-shake {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(5px, 5px); }
+      50% { transform: translate(-5px, -5px); }
+      75% { transform: translate(5px, -5px); }
+      100% { transform: translate(-5px, 5px); }
+    }
+    .shake {
+        animation: screen-shake 0.1s infinite;
+    }
+  </style>
+</head>
+<body class="select-none"> 
+
+  <div class="glitch-overlay"></div>
+  <div id="system-locked-message">SYSTEM LOCKED</div>
+
+  <main>
+    <h1 id="ransomware-title">!!! SYSTEM COMPROMISED !!!</h1>
+    <p id="ransomware-message">ALL YOUR FILES HAVE BEEN ENCRYPTED. YOUR DATA IS INACCESSIBLE.</p>
+    <p class="text-lg md:text-xl mb-6">TO RESTORE ACCESS, YOU MUST MAKE A PAYMENT.</p>
+    <p class="bitcoin-address" id="bitcoin-address"><strong>BTC ADDRESS: 1FakeBitcoinAddress4DemoOnly</strong></p>
+
+    <div class="timer" id="timer">00:00:20</div> 
+
+    <p class="warning-text" id="data-loss-warning">FAILURE TO PAY WILL RESULT IN PERMANENT DATA LOSS!</p>
+
+    <div class="action-buttons" id="ransomware-buttons">
+      <button onclick="fake-ransomware.html" class="action-button btn-decrypt">
+        PAY & DECRYPT NOW
+      </button>
+      <button onclick="learnMore()" class="action-button btn-learn">
+        LEARN MORE ABOUT RANSOMWARE
+      </button>
+    </div>
+  </main>
+
+  <div id="local-feedback-modal-overlay" class="local-feedback-modal-overlay">
+    <div class="local-feedback-modal-content">
+      <h3 id="local-modal-title" class="text-2xl font-bold mb-4"></h3>
+      <p id="local-modal-message" class="text-gray-300 mb-6"></p>
+      <button onclick="handleLocalModalClose()"
+              class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition duration-300 shadow-lg">
+        Got It!
+      </button>
+    </div>
+  </div>
+
+  <div id="deletion-simulation-overlay" class="deletion-overlay">
+    <p>DELETING FILES...</p>
+    <div class="progress-bar-deletion">
+      <div class="progress-fill" id="deletion-progress-fill"></div>
+    </div>
+    <p class="mt-4" id="deletion-status"></p>
+  </div>
+
+  <script>
+    let hours = 0, minutes = 0, seconds = 20; 
+    let countdown;
+    let simulationId = ''; 
+    let currentFeedbackData = null; 
+    let systemLockedMessageTimeout; 
+
+
+    function sendFeedbackToParentAndClose(title, message, isPhish, simId) {
+      localStorage.setItem('simulationFeedback', JSON.stringify({ title, message, isPhish, simulationId: simId }));
+      setTimeout(() => {
+        window.close(); 
+      }, 200); 
+    }
+
+    function showLocalFeedbackModal(title, message, isPhish) {
+      const modalOverlay = document.getElementById('local-feedback-modal-overlay');
+      const modalTitle = document.getElementById('local-modal-title');
+      const modalMessage = document.getElementById('local-modal-message');
+
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+
+      if (isPhish) {
+        modalTitle.classList.remove('title-good');
+        modalTitle.classList.add('title-phish');
+      } else {
+        modalTitle.classList.remove('title-phish');
+        modalTitle.classList.add('title-good');
+      }
+
+      modalOverlay.classList.add('show');
+      document.body.classList.remove('shake'); 
+    }
+
+    function handleLocalModalClose() {
+      document.getElementById('local-feedback-modal-overlay').classList.remove('show');
+      if (currentFeedbackData) {
+          sendFeedbackToParentAndClose(
+              currentFeedbackData.title,
+              currentFeedbackData.message,
+              currentFeedbackData.isPhish,
+              currentFeedbackData.simulationId
+          );
+      }
+    }
+
+    function startDeletionSimulation() {
+        const deletionOverlay = document.getElementById('deletion-simulation-overlay');
+        const progressBarFill = document.getElementById('deletion-progress-fill');
+        const deletionStatus = document.getElementById('deletion-status');
+        
+        deletionOverlay.classList.add('show');
+        progressBarFill.style.width = '0%';
+        deletionStatus.textContent = 'INITIALIZING DELETION PROTOCOL...';
+
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 10; 
+            if (progress <= 100) {
+                progressBarFill.style.width = progress + '%';
+                deletionStatus.textContent = `DELETING FILES: ${progress}% COMPLETE...`;
+                document.body.classList.add('shake'); 
+            } else {
+                clearInterval(interval);
+                document.body.classList.remove('shake');
+                deletionStatus.textContent = 'DELETION COMPLETE. FILES ARE GONE.';
+                
+                const title = '💀 FILES PERMANENTLY DELETED!';
+                const message = '(Just kidding — this was a simulation to teach you about ransomware. In a real scenario, your files would be gone unless you had backups and a recovery plan!)';
+                const isPhish = true;
+                currentFeedbackData = { title, message, isPhish, simulationId: 'ransomware-sim-expired' };
+                
+                setTimeout(() => {
+                    showLocalFeedbackModal(title, message, isPhish);
+                }, 1000); 
+            }
+        }, 50); 
+    }
+
+
+    function updateTimer() {
+      if (hours === 0 && minutes === 0 && seconds === 0) {
+        clearInterval(countdown);
+        startDeletionSimulation(); 
+        return;
+      }
+
+      seconds--;
+      
+      let t = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      const timerElement = document.getElementById("timer");
+      timerElement.textContent = t; 
+
+      if (hours === 0 && minutes === 0 && seconds <= 10) {
+        timerElement.classList.add('text-yellow-400'); 
+        timerElement.classList.remove('text-red-500');
+        document.body.classList.add('shake'); 
+      } else {
+        timerElement.classList.remove('text-yellow-400');
+        timerElement.classList.add('text-red-500');
+        document.body.classList.remove('shake'); 
+      }
+    }
+
+    
+
+      countdown = setInterval(updateTimer, 1000);
+
+      document.body.addEventListener('click', (event) => {
+          if (!event.target.closest('.action-button') && !event.target.closest('.local-feedback-modal-overlay') && !document.getElementById('local-feedback-modal-overlay').classList.contains('show')) {
+              const systemLocked = document.getElementById('system-locked-message');
+              systemLocked.style.display = 'block';
+              document.body.classList.add('shake'); 
+              clearTimeout(systemLockedMessageTimeout);
+              systemLockedMessageTimeout = setTimeout(() => {
+                  systemLocked.style.display = 'none';
+                  document.body.classList.remove('shake'); 
+              }, 1500);          }
+      });
+    
+
+    
+
+    function learnMore() {
+      const title = '💡 ABOUT RANSOMWARE';
+      const message = 'Ransomware is a type of malicious software that encrypts your files and demands payment for their release. Always keep backups of your important data and use robust antivirus software to protect your systems. NEVER PAY THE RANSOM!';
+      const isPhish = false; 
+      currentFeedbackData = { title, message, isPhish, simulationId: 'ransomware-learn-more' };
+      showLocalFeedbackModal(title, message, isPhish);
+    }
+  </script>
+</body>
+</html>

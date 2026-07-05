@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #202124;  
+      color: #e8eaed;  
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+      padding: 20px;
+      position: relative;
+      margin: 0;
+    }
+
+    .google-container {
+      width: 100%;
+      max-width: 1200px;
+      text-align: center;
+    }
+
+    .google-logo {
+      width: 272px;  
+      margin-bottom: 2rem;
+      display: block;  
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .search-box {
+      background-color: #303134;  
+      border: 1px solid #5f6368;
+      padding: 10px 15px;
+      border-radius: 25px;
+      display: flex;
+      align-items: center;
+      width: 90%;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .search-box input {
+      background-color: transparent;
+      border: none;
+      width: 100%;
+      font-size: 1rem;
+      color: #e8eaed;
+      padding: 0 10px;
+    }
+
+    .search-box input:focus {
+      outline: none;
+    }
+
+    .search-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .search-buttons button {
+      background-color: #303134;
+      color: #e8eaed;
+      padding: 0.75rem 1.25rem;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background-color: #202124;
+      border-top: 1px solid #3c4043;
+      padding: 1rem;
+      text-align: center;
+      font-size: 0.875rem;
+    }
+
+   
+
+     .popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      max-width: 450px;
+      width: 100%;
+      z-index: 1000;
+      text-align: center;
+      display: none;
+    }
+
+    .popup h2 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #1f2937;
+      margin-bottom: 1rem;
+    }
+
+    .popup p {
+      color: #4b5563;
+      margin-bottom: 1.5rem;
+    }
+    
+    .popup button {
+      background-color: #3b82f6;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .popup button:hover {
+      background-color: #2563eb;
+    }
+
+     .progress-container {
+      width: 100%;
+      height: 10px;
+      background-color: #ddd;
+      margin-top: 20px;
+      border-radius: 5px;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: #4285f4;
+      border-radius: 5px;
+    }
+ 
+    .local-feedback-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(249, 247, 247, 0.85);
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .local-feedback-modal-overlay.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .local-feedback-modal-content {
+      background: #fdb102;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(251, 151, 2, 0.5);
+      max-width: 90%;
+      width: 450px;
+      text-align: center;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+      border: 3px solid #ef4444;
+      color: #e2e8f0;
+    }
+
+    .local-feedback-modal-overlay.show .local-feedback-modal-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .local-feedback-modal-content .title-phish {
+      color: #dc2626;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="google-container">
+    <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_92x30dp.png" alt="Google Logo" class="google-logo">
+    <div class="search-box">
+      <input type="text" placeholder="Search Google or type a URL" />
+    </div>
+    <div class="search-buttons">
+      <button>Google Search</button>
+      <button>I'm Feeling Lucky</button>
+    </div>
+  </div>
+
+  
+
+   <div class="popup" id="popup">
+    <img src="https://www.google.com/chrome/static/images/chrome-logo.svg" alt="Chrome Logo" class="w-12 mx-auto mb-4">
+    <h2 class="font-bold text-red-500">Critical Chrome Update Available</h2>
+    <p>Your browser is severely out of date and may be vulnerable to attacks.</p>
+     <div class="progress-container" id="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <button onclick="startFakeUpdate()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition duration-300 shadow-lg mt-4" id="download-button">Download Update</button>
+  </div>
+
+   <div id="local-feedback-modal-overlay" class="local-feedback-modal-overlay">
+    <div class="local-feedback-modal-content">
+      <h3 id="local-modal-title" class="text-2xl font-bold mb-4"></h3>
+      <p id="local-modal-message" class="text-gray-700 mb-6"></p>
+      <button onclick="handleLocalModalClose()"
+        class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition duration-300 shadow-lg">
+        Got It!
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let simulationId = '';
+    let currentFeedbackData = null;
+
+     function sendFeedbackToParentAndClose(title, message, isPhish, simId) {
+      localStorage.setItem('simulationFeedback', JSON.stringify({ title, message, isPhish, simulationId: simId }));
+      setTimeout(() => {
+        window.close();
+      }, 200);
+    }
+
+     function showLocalFeedbackModal(title, message, isPhish) {
+      const modalOverlay = document.getElementById('local-feedback-modal-overlay');
+      const modalTitle = document.getElementById('local-modal-title');
+      const modalMessage = document.getElementById('local-modal-message');
+
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+
+      modalTitle.className = 'text-2xl font-bold mb-4 ' + (isPhish ? 'title-phish' : 'title-good');
+
+      modalOverlay.classList.add('show');
+    }
+
+    function handleLocalModalClose() {
+      document.getElementById('local-feedback-modal-overlay').classList.remove('show');
+      if (currentFeedbackData) {
+        sendFeedbackToParentAndClose(
+          currentFeedbackData.title,
+          currentFeedbackData.message,
+          currentFeedbackData.isPhish,
+          currentFeedbackData.simulationId
+        );
+      }
+    }
+
+    function startFakeUpdate() {
+       document.getElementById('download-button').style.display = 'none';
+      document.getElementById('progress-container').style.display = 'block';
+
+      let progress = 0;
+      const progressBar = document.getElementById('progress-bar');
+
+      const interval = setInterval(() => {
+        progress += 5;
+        progressBar.style.width = progress + '%';
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          
+           const title = '🚨 Warning: Phishing Attempt!';
+          const message = 'This was a simulated browser update scam. Always update your browser directly through its official settings, not through pop-ups or external links! Downloading from here would have installed malware.';
+          const isPhish = true;
+          
+          currentFeedbackData = { title, message, isPhish, simulationId: simulationId };
+          showLocalFeedbackModal(title, message, isPhish);
+        }
+      }, 50);
+    }
+
+    window.onload = function () {
+      simulationId = localStorage.getItem('currentSimulationId') || 'chrome-update';
+    };
+
+     document.body.addEventListener('click', function(event) {
+        const popup = document.getElementById('popup');
+         if (popup.style.display !== 'block' && !popup.contains(event.target)) {
+            popup.style.display = 'block';
+        }
+    });
+  </script>
+</body>
+</html>

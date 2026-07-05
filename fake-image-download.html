@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Downloading Photo...</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #000000, #0f0f0f);  
+      color: #00ff66; 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+    .hacker-text {
+      font-family: 'Courier New', monospace;
+      text-shadow: 0 0 8px #00ff66;
+    }
+    .status {
+      font-size: 1.8em;
+      margin-top: 1em;
+    }
+    #realFile, #fakeFile {
+      margin-top: 1em;
+      font-size: 1.2em;
+      display: none;  
+    }
+    #imagePreview {
+      display: none;  
+      margin-top: 1em;
+      border: 2px solid #00ff66;
+      border-radius: 8px;
+      max-width: 300px;
+      box-shadow: 0 0 10px #00ff66;
+    }
+
+     .local-feedback-modal-overlay {
+      display: none;  
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);  
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .local-feedback-modal-overlay.show {
+      display: flex;
+      opacity: 1;
+    }
+    .local-feedback-modal-content {
+      background: #fff;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      max-width: 90%;
+      width: 450px;
+      text-align: center;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    }
+    .local-feedback-modal-overlay.show .local-feedback-modal-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .local-feedback-modal-content .title-phish {
+      color: #dc2626;  
+    }
+    .local-feedback-modal-content .title-good {
+      color: #10b981;  
+    }
+
+     .save-as-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      align-items: center;
+      justify-content: center;
+      z-index: 999;  
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .save-as-modal-overlay.show {
+      display: flex;
+      opacity: 1;
+    }
+    .save-as-modal-content {
+      background: #f3f4f6; 
+      color: #1f2937;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      max-width: 90%;
+      width: 500px;
+      text-align: left;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    }
+    .save-as-modal-overlay.show .save-as-modal-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .folder-item {
+      padding: 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background-color 0.2s ease;
+    }
+    .folder-item:hover {
+      background-color: #e5e7eb;  
+    }
+    .folder-item.selected {
+      background-color: #bfdbfe;  
+      border: 1px solid #60a5fa;  
+    }
+  </style>
+</head>
+<body>
+
+  <main class="flex flex-col items-center justify-center flex-grow p-4">
+    <h1 class="text-3xl md:text-4xl font-bold hacker-text mb-6">Downloading image.jpg...</h1>
+    <div class="text-4xl md:text-5xl font-bold hacker-text mb-8" id="status">0%</div>
+
+    <div id="realFile" class="text-xl md:text-2xl hacker-text mb-4 hidden">Downloaded: image.jpg</div>
+    <img id="imagePreview" src="image.jpg" alt="image" class="max-w-xs md:max-w-sm rounded-lg border-2 border-green-400 shadow-lg mb-4 hidden" />
+
+    <div id="fakeFile" class="text-xl md:text-2xl hacker-text text-red-400 mb-4 hidden"></div>
+
+    <a id="downloadLink" href="PhishED.jpg" download style="display:none;"></a>
+  </main>
+
+   <div id="local-feedback-modal-overlay" class="local-feedback-modal-overlay">
+    <div class="local-feedback-modal-content">
+      <h3 id="local-modal-title" class="text-2xl font-bold mb-4"></h3>
+      <p id="local-modal-message" class="text-gray-700 mb-6"></p>
+      <button onclick="handleLocalModalClose()"
+              class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition duration-300 shadow-lg">
+        Got It!
+      </button>
+    </div>
+  </div>
+
+   <div id="save-as-modal-overlay" class="save-as-modal-overlay">
+    <div class="save-as-modal-content">
+      <h2 class="text-2xl font-bold mb-4 text-gray-800">Save As</h2>
+      <div class="mb-4">
+        <label for="file-name-input" class="block text-gray-700 text-sm font-medium mb-2">File name:</label>
+        <input type="text" id="file-name-input" value="PhishED_image.jpg" class="w-full p-2 border border-gray-300 rounded-md bg-white text-gray-800" readonly>
+      </div>
+      <div class="mb-6">
+        <label class="block text-gray-700 text-sm font-medium mb-2">Folders:</label>
+        <div class="bg-white border border-gray-300 rounded-md p-2 h-32 overflow-y-auto">
+          <div class="folder-item" onclick="selectFolder(this, 'Desktop')">📁 Desktop</div>
+          <div class="folder-item selected" onclick="selectFolder(this, 'Downloads')">📁 Downloads</div>
+          <div class="folder-item" onclick="selectFolder(this, 'Documents')">📁 Documents</div>
+          <div class="folder-item" onclick="selectFolder(this, 'Pictures')">📁 Pictures</div>
+          <div class="folder-item" onclick="selectFolder(this, 'Videos')">📁 Videos</div>
+        </div>
+      </div>
+      <div class="flex justify-end space-x-4">
+        <button onclick="cancelSave()" class="px-6 py-2 rounded-lg font-semibold bg-gray-300 text-gray-800 hover:bg-gray-400 transition">Cancel</button>
+        <button onclick="confirmSave()" class="px-6 py-2 rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700 transition">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let progress = 0;
+    let downloadComplete = false;
+    let triggeredFeedback = false;  
+    let simulationId = '';  
+    let currentFeedbackData = null;  
+    let selectedFolderName = 'Downloads';  
+
+    const statusDiv = document.getElementById('status');
+    const realFileDiv = document.getElementById('realFile');
+    const fakeFileDiv = document.getElementById('fakeFile');
+    const imagePreview = document.getElementById('imagePreview');
+    const downloadLink = document.getElementById('downloadLink');
+    const saveAsModalOverlay = document.getElementById('save-as-modal-overlay');
+
+    realFileDiv.style.display = "none";
+    imagePreview.style.display = "none";
+
+     function sendFeedbackToParentAndClose(title, message, isPhish, simId) {
+      localStorage.setItem('simulationFeedback', JSON.stringify({ title, message, isPhish, simulationId: simId }));
+      setTimeout(() => {
+        window.close();  
+      }, 200);  
+    }
+
+     function showLocalFeedbackModal(title, message, isPhish) {
+      const modalOverlay = document.getElementById('local-feedback-modal-overlay');
+      const modalTitle = document.getElementById('local-modal-title');
+      const modalMessage = document.getElementById('local-modal-message');
+
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+
+      if (isPhish) {
+        modalTitle.classList.remove('title-good');
+        modalTitle.classList.add('title-phish');
+      } else {
+        modalTitle.classList.remove('title-phish');
+        modalTitle.classList.add('title-good');
+      }
+
+      modalOverlay.classList.add('show');
+    }
+
+     function handleLocalModalClose() {
+      document.getElementById('local-feedback-modal-overlay').classList.remove('show');
+      if (currentFeedbackData) {
+          sendFeedbackToParentAndClose(
+              currentFeedbackData.title,
+              currentFeedbackData.message,
+              currentFeedbackData.isPhish,
+              currentFeedbackData.simulationId
+          );
+      }
+    }
+
+    function simulateDownload() {
+      if (progress < 100) {
+        progress += Math.random() * 5;
+        if (progress > 100) progress = 100;
+        statusDiv.textContent = Math.floor(progress) + "%";
+        setTimeout(simulateDownload, 200 + Math.random() * 300);
+      } else {
+        statusDiv.textContent = "Completed.";
+        showSaveAsModal();  
+      }
+    }
+
+     function showSaveAsModal() {
+        saveAsModalOverlay.classList.add('show');
+    }
+
+    function selectFolder(element, folderName) {
+        document.querySelectorAll('.folder-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        element.classList.add('selected');
+        selectedFolderName = folderName;
+        console.log("Selected folder:", selectedFolderName);
+    }
+
+    function cancelSave() {
+        saveAsModalOverlay.classList.remove('show');
+         const title = '✅ Good Decision!';
+        const message = 'You chose not to save the file. Always be cautious when prompted to download files, especially from unexpected sources. This could have contained hidden malware.';
+        const isPhish = false;
+        currentFeedbackData = { title, message, isPhish, simulationId: simulationId + '-cancelled' };
+        showLocalFeedbackModal(title, message, isPhish);
+    }
+
+    function confirmSave() {
+        saveAsModalOverlay.classList.remove('show');
+         downloadRealImage();
+    }
+
+    function downloadRealImage() {
+       downloadLink.click();
+       realFileDiv.style.display = "block";
+      imagePreview.style.display = "block";
+      fakeFileDiv.style.display = "block";
+      fakeFileDiv.textContent = `Downloaded to ${selectedFolderName}: Image.jpg.exe`;  
+      downloadComplete = true;
+
+       setTimeout(() => {
+        const title = '🚨 ALERT: Malware Detected!';
+        const message = 'While you downloaded a harmless .jpg, a hidden malware.exe was also installed in the background! Always verify the file type and source before downloading, especially executables disguised as common file types. This was a simulation, no real .exe was downloaded, your system is safe.';
+        const isPhish = true;
+        currentFeedbackData = { title, message, isPhish, simulationId: simulationId };
+        showLocalFeedbackModal(title, message, isPhish);
+        triggeredFeedback = true;  
+      }, 3000);  
+    }
+
+    window.onload = function() {
+         simulationId = localStorage.getItem('currentSimulationId') || 'image-download';  
+         simulateDownload();
+    };
+  </script>
+</body>
+</html>

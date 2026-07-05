@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camera Access Phishing Simulation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+    .camera-feed {
+      display: none;
+      background: #000;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+    .camera-feed.show {
+      display: block;
+    }
+    .blink {
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0.5; }
+    }
+
+    .local-feedback-modal-overlay {
+      display: none; 
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7); 
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .local-feedback-modal-overlay.show {
+      display: flex;
+      opacity: 1;
+    }
+    .local-feedback-modal-content {
+      background: #fff;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      max-width: 90%;
+      width: 450px;
+      text-align: center;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    }
+    .local-feedback-modal-overlay.show .local-feedback-modal-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .local-feedback-modal-content .title-phish {
+      color: #dc2626; 
+    }
+    .local-feedback-modal-content .title-good {
+      color: #10b981; 
+    }
+  </style>
+</head>
+<body>
+
+  <main class="max-w-md mx-auto w-full">
+    <section class="bg-white p-6 rounded-lg shadow-lg border-2 border-gray-300 w-full">
+      <header class="text-center mb-6">
+        <h1 class="text-3xl font-bold text-blue-800 mb-2">📷 Camera Access Phishing Simulation</h1>
+        <p class="text-gray-600 mt-2">A suspicious website is requesting camera access. What will you do?</p>
+      </header>
+
+      <div class="text-6xl mb-4 text-center" aria-hidden="true">📸</div>
+      <h2 class="text-xl font-semibold mb-3 text-center">Permission Needed</h2>
+      <p class="mb-6 text-gray-700 text-center">This site wants to access your camera to verify your identity.</p>
+      <div class="flex justify-center space-x-4">
+        <button class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold text-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300" onclick="fakeAllow()" aria-label="Allow camera access (simulated phishing)">Allow</button>
+        <button class="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold text-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300" onclick="fakeDeny()" aria-label="Deny camera access">Deny</button>
+      </div>
+      <div id="camera-feed" class="camera-feed">
+        <p class="blink text-red-500 font-bold">🔴 Recording... Your camera is active!</p>
+      </div>
+    </section>
+  </main>
+
+  
+  <div id="local-feedback-modal-overlay" class="local-feedback-modal-overlay">
+    <div class="local-feedback-modal-content">
+      <h3 id="local-modal-title" class="text-2xl font-bold mb-4"></h3>
+      <p id="local-modal-message" class="text-gray-700 mb-6"></p>
+      <button onclick="handleLocalModalClose()"
+              class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition duration-300 shadow-lg">
+        Got It!
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let simulationId = ''; 
+    let currentFeedbackData = null; 
+    function sendFeedbackToParentAndClose(title, message, isPhish, simId) {
+      localStorage.setItem('simulationFeedback', JSON.stringify({ title, message, isPhish, simulationId: simId }));
+      setTimeout(() => {
+        window.close(); 
+      }, 200); 
+    }
+
+    function showLocalFeedbackModal(title, message, isPhish) {
+      const modalOverlay = document.getElementById('local-feedback-modal-overlay');
+      const modalTitle = document.getElementById('local-modal-title');
+      const modalMessage = document.getElementById('local-modal-message');
+
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+
+      if (isPhish) {
+        modalTitle.classList.remove('title-good');
+        modalTitle.classList.add('title-phish');
+      } else {
+        modalTitle.classList.remove('title-phish');
+        modalTitle.classList.add('title-good');
+      }
+
+      modalOverlay.classList.add('show');
+    }
+
+    function handleLocalModalClose() {
+      document.getElementById('local-feedback-modal-overlay').classList.remove('show');
+      if (currentFeedbackData) {
+          sendFeedbackToParentAndClose(
+              currentFeedbackData.title,
+              currentFeedbackData.message,
+              currentFeedbackData.isPhish,
+              currentFeedbackData.simulationId
+          );
+      }
+    }
+
+    window.onload = function() {
+        simulationId = localStorage.getItem('currentSimulationId') || 'camera-simulation'; 
+    };
+
+    function fakeAllow() {
+      const cameraFeed = document.getElementById('camera-feed');
+      cameraFeed.classList.add('show'); 
+
+      const title = '🚨 Warning: Phishing Attempt!';
+      const message = 'This was a fake camera request! Granting camera access to suspicious websites can compromise your privacy and allow attackers to spy on you. Always be cautious about unexpected permission requests from websites.';
+      const isPhish = true;
+
+      currentFeedbackData = { title, message, isPhish, simulationId: 'camera-allow' };
+
+      
+      setTimeout(() => {
+        showLocalFeedbackModal(title, message, isPhish);
+      }, 1700); 
+    }
+
+    function fakeDeny() {
+      const title = '✅ Good Move!';
+      const message = 'Denying suspicious camera access requests is a smart move to protect your privacy and security. Legitimate sites rarely require camera access for simple verification.';
+      const isPhish = false; 
+
+      currentFeedbackData = { title, message, isPhish, simulationId: 'camera-deny' };
+
+      showLocalFeedbackModal(title, message, isPhish);
+    }
+  </script>
+</body>
+</html>

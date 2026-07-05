@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vishing Simulation</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+.fade {
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+.show {
+    opacity: 1;
+}
+
+.pulse-ring {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(239,68,68,0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 20px rgba(239,68,68,0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(239,68,68,0);
+    }
+}
+</style>
+
+</head>
+
+<body class="bg-gray-900 text-white flex justify-center items-center h-screen">
+
+<div class="w-[400px]">
+
+    <!-- Incoming Call Screen -->
+    <div id="callScreen" class="text-center fade show">
+
+        <div class="bg-gray-800 p-8 rounded-2xl shadow-xl">
+
+            <div class="flex justify-center mb-5">
+                <div class="bg-red-500 w-24 h-24 rounded-full flex items-center justify-center text-5xl pulse-ring">
+                    📞
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-bold">Incoming Call</h2>
+
+            <p class="mt-2 text-gray-300">
+                +91 98XXXXXX21
+            </p>
+
+            <p class="mt-1 text-red-400">
+                "Bank Security Department"
+            </p>
+
+            <div class="flex justify-center gap-6 mt-8">
+
+                <button onclick="acceptCall()"
+                    class="bg-green-600 px-6 py-3 rounded-full hover:bg-green-700 transition">
+                    Accept
+                </button>
+
+                <button onclick="declineCall()"
+                    class="bg-red-600 px-6 py-3 rounded-full hover:bg-red-700 transition">
+                    Decline
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Call Conversation -->
+    <div id="conversation" class="hidden fade">
+
+        <div class="bg-gray-800 p-6 rounded-2xl shadow-xl">
+
+            <h2 class="text-xl font-bold mb-4 text-center">
+                📞 Live Call
+            </h2>
+
+            <div id="dialogue"
+                class="bg-gray-700 p-4 rounded-lg h-48 overflow-y-auto text-gray-200 text-sm leading-7">
+            </div>
+
+            <div class="mt-5">
+
+                <button onclick="shareOTP()"
+                    class="w-full bg-red-600 py-3 rounded-lg hover:bg-red-700 transition">
+                    Share OTP
+                </button>
+
+                <button onclick="hangupSafe()"
+                    class="w-full bg-green-600 py-3 rounded-lg hover:bg-green-700 transition mt-3">
+                    Hang Up & Verify Officially
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Scam Warning -->
+    <div id="warning" class="hidden fade text-center">
+
+        <div class="bg-gray-800 p-6 rounded-2xl shadow-xl">
+
+            <h2 class="text-3xl text-red-400 font-bold mb-4">
+                ⚠️ Vishing Attack Detected
+            </h2>
+
+            <p class="text-gray-300 leading-7">
+                The caller attempted to steal your OTP and banking information
+                by pretending to be from your bank.
+            </p>
+
+            <div class="bg-gray-700 p-4 rounded-lg mt-5 text-left">
+
+                <h3 class="text-red-400 font-semibold mb-2">
+                    🚩 Warning Signs
+                </h3>
+
+                <ul class="list-disc ml-5 text-gray-300 space-y-2">
+                    <li>Created urgency and fear</li>
+                    <li>Requested OTP and sensitive information</li>
+                    <li>Used fake authority impersonation</li>
+                    <li>Pressured immediate action</li>
+                </ul>
+
+            </div>
+
+            <button onclick="restart()"
+                class="mt-6 bg-blue-600 px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+                Try Again
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Safe Result -->
+    <div id="safeResult" class="hidden fade text-center">
+
+        <div class="bg-gray-800 p-6 rounded-2xl shadow-xl">
+
+            <h2 class="text-3xl text-green-400 font-bold mb-4">
+                ✅ Safe Decision
+            </h2>
+
+            <p class="text-gray-300 leading-7">
+                You avoided sharing sensitive information and chose to verify
+                through official banking channels.
+            </p>
+
+            <div class="bg-gray-700 p-4 rounded-lg mt-5 text-left">
+
+                <h3 class="text-green-400 font-semibold mb-2">
+                    ✔ Good Security Practice
+                </h3>
+
+                <ul class="list-disc ml-5 text-gray-300 space-y-2">
+                    <li>Never share OTPs on calls</li>
+                    <li>Verify using official bank apps/websites</li>
+                    <li>Be cautious of urgent requests</li>
+                </ul>
+
+            </div>
+
+            <button onclick="window.close()"
+                class="mt-6 bg-blue-600 px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+                 Exit Simulation
+            </button>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- ringtone -->
+<audio id="ringtone" loop>
+    <source src="https://www.soundjay.com/phone/telephone-ring-01a.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+const ringtone = document.getElementById("ringtone");
+ringtone.play();
+
+const messages = [
+    "Hello sir, this is the Bank Security Department.",
+    "We detected suspicious activity on your account.",
+    "Your account may be blocked within 30 minutes.",
+    "To secure your account, please confirm the OTP sent to your phone."
+];
+
+let i = 0;
+
+function switchView(from, to) {
+
+    document.getElementById(from).classList.remove("show");
+
+    setTimeout(() => {
+
+        document.getElementById(from).classList.add("hidden");
+
+        document.getElementById(to).classList.remove("hidden");
+
+        setTimeout(() => {
+            document.getElementById(to).classList.add("show");
+        }, 50);
+
+    }, 500);
+}
+
+function acceptCall() {
+
+    ringtone.pause();
+
+    switchView("callScreen", "conversation");
+
+    setTimeout(showMessages, 800);
+}
+
+function declineCall() {
+
+    ringtone.pause();
+
+    switchView("callScreen", "safeResult");
+}
+
+function showMessages() {
+
+    if (i < messages.length) {
+
+        const dialogue = document.getElementById("dialogue");
+
+        dialogue.innerHTML += `
+            <p class="mb-3">
+                <span class="text-red-400">Caller:</span>
+                ${messages[i]}
+            </p>
+        `;
+
+        dialogue.scrollTop = dialogue.scrollHeight;
+
+        i++;
+
+        setTimeout(showMessages, 2000);
+    }
+}
+
+function shareOTP() {
+    switchView("conversation", "warning");
+}
+
+function hangupSafe() {
+    switchView("conversation", "safeResult");
+}
+
+function restart() {
+    location.reload();
+}
+
+</script>
+
+</body>
+</html>

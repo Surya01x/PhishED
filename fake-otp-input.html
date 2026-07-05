@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SMS OTP Phishing Simulation</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+.fade {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.show {
+  opacity: 1;
+}
+
+.phone {
+  background: #111827;
+  border: 10px solid #1f2937;
+  border-radius: 35px;
+}
+
+</style>
+
+</head>
+
+<body class="bg-gray-900 text-white flex justify-center items-center h-screen">
+
+<div class="phone w-[350px] h-[670px] p-4 shadow-2xl overflow-hidden">
+
+  <!-- top -->
+  <div class="flex justify-between items-center mb-5">
+    <p class="text-sm text-gray-400">9:41 AM</p>
+    <p class="text-sm text-gray-400">📶 🔋</p>
+  </div>
+
+  <!-- SMS -->
+  <div id="sms" class="fade show">
+
+    <h2 class="text-xl font-semibold mb-4 text-center">
+      📱 Messages
+    </h2>
+
+    <div class="bg-gray-800 p-4 rounded-2xl shadow-lg">
+
+      <p class="text-green-400 font-semibold">
+        GAME-REWARDS
+      </p>
+
+      <p class="text-gray-300 mt-3 leading-7">
+        Congratulations 🎉
+        Your account has been selected to receive FREE premium gaming rewards.
+        Verify your OTP now to activate your reward package.
+      </p>
+
+      <p class="text-blue-400 break-all mt-3">
+        http://free-reward-claim-event.com
+      </p>
+
+      <p class="text-red-400 text-sm mt-3">
+        Offer expires in 10 minutes.
+      </p>
+
+      <div class="mt-6 flex flex-col gap-3">
+
+        <button onclick="openFakePage()"
+          class="bg-red-600 py-3 rounded-lg hover:bg-red-700 transition">
+          Claim Reward
+        </button>
+
+        <button onclick="ignoreSMS()"
+          class="bg-green-600 py-3 rounded-lg hover:bg-green-700 transition">
+          Ignore Message
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Fake OTP Page -->
+  <div id="fakeSite" class="hidden fade">
+
+    <!-- fake browser -->
+    <div class="bg-gray-800 p-2 rounded-t-lg text-sm text-gray-300">
+      🔒 free-reward-claim-event.com
+    </div>
+
+    <div class="bg-gray-700 p-5 rounded-b-lg">
+<button onclick="goBack()"
+  class="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition mt-3">
+  ← Back to Messages
+</button>
+      <h2 class="text-xl font-semibold mb-5 text-center">
+        🎮 Reward Verification
+      </h2>
+
+      <p class="text-gray-300 text-sm mb-4 text-center">
+        Enter the OTP sent to your mobile number to activate rewards.
+      </p>
+
+      <input type="text"
+        id="otpInput"
+        maxlength="6"
+        placeholder="Enter OTP"
+        class="w-full p-3 rounded mb-4 text-black text-center tracking-widest text-xl">
+
+      <button onclick="submitOTP()"
+        class="w-full bg-yellow-500 text-black py-3 rounded-lg hover:bg-yellow-600 transition">
+        Activate Reward
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Warning -->
+  <div id="warning" class="hidden fade">
+
+    <div class="bg-gray-800 p-5 rounded-2xl shadow-lg">
+
+      <h2 class="text-3xl font-bold text-red-400 mb-4 text-center">
+        ⚠️ Smishing Attack Detected
+      </h2>
+
+      <p class="text-gray-300 leading-7">
+        This fake reward website attempted to steal your OTP and personal information using excitement and urgency tactics.
+      </p>
+
+      <div class="bg-gray-700 p-4 rounded-lg mt-5">
+
+        <h3 class="text-red-400 font-semibold mb-3">
+          🚩 Warning Signs
+        </h3>
+
+        <ul class="list-disc ml-5 text-gray-300 space-y-2">
+          <li>Too-good-to-be-true reward offer</li>
+          <li>Urgent countdown pressure</li>
+          <li>Unknown external link</li>
+          <li>Requested OTP verification</li>
+        </ul>
+
+      </div>
+
+      <button onclick="window.close()"
+        class="mt-6 bg-red-600 px-6 py-3 rounded-lg hover:bg-red-700 transition w-full">
+        Exit Simulation
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Safe -->
+  <div id="safe" class="hidden fade">
+
+    <div class="bg-gray-800 p-5 rounded-2xl shadow-lg">
+
+      <h2 class="text-3xl font-bold text-green-400 mb-4 text-center">
+        ✅ Safe Decision
+      </h2>
+
+      <p class="text-gray-300 leading-7">
+        You avoided clicking the suspicious reward link and protected your OTP and personal information from scammers.
+      </p>
+
+      <div class="bg-gray-700 p-4 rounded-lg mt-5">
+
+        <h3 class="text-green-400 font-semibold mb-3">
+          ✔ Good Security Practice
+        </h3>
+
+        <ul class="list-disc ml-5 text-gray-300 space-y-2">
+          <li>Avoid suspicious reward offers</li>
+          <li>Never share OTPs on unknown websites</li>
+          <li>Be cautious of urgent countdowns</li>
+          <li>Verify offers using official platforms</li>
+        </ul>
+
+      </div>
+
+      <button onclick="window.close()"
+        class="mt-6 bg-red-600 px-6 py-3 rounded-lg hover:bg-red-700 transition w-full">
+        Exit Simulation
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+let generatedOTP = "";
+
+// smooth transitions
+function switchView(from, to) {
+
+  document.getElementById(from).classList.remove("show");
+
+  setTimeout(() => {
+
+    document.getElementById(from).classList.add("hidden");
+
+    document.getElementById(to).classList.remove("hidden");
+
+    setTimeout(() => {
+      document.getElementById(to).classList.add("show");
+    }, 50);
+
+  }, 400);
+}
+
+// generate random OTP
+function generateOTP() {
+  return Math.floor(1000 + Math.random() * 9000);
+}
+
+// user clicks reward link
+function openFakePage() {
+
+  // generate OTP only once
+  if (generatedOTP === "") {
+
+    generatedOTP = generateOTP();
+
+    const otpBox = document.createElement("div");
+
+    otpBox.id = "otpMessage";
+
+    otpBox.className =
+      "bg-gray-800 p-3 rounded-2xl shadow-lg mt-4 fade show";
+
+    otpBox.innerHTML = `
+      <p class="text-green-400 font-semibold">
+        OTP-SERVICE
+      </p>
+
+      <p class="text-gray-300 mt-2">
+        Your verification OTP is:
+        <span class="text-yellow-400 font-bold text-lg">
+          ${generatedOTP}
+        </span>
+      </p>
+    `;
+
+    document.getElementById("sms").appendChild(otpBox);
+  }
+
+  // open fake site
+  setTimeout(() => {
+    switchView("sms", "fakeSite");
+  }, 2000);
+}
+
+// user submits OTP
+function submitOTP() {
+
+  const otp = document.getElementById("otpInput").value.trim();
+
+  if (otp === "") {
+    alert("Please enter OTP");
+    return;
+  }
+
+  // correct OTP
+  if (otp == generatedOTP) {
+
+    switchView("fakeSite", "warning");
+
+  } else {
+
+    alert("Invalid OTP");
+  }
+}
+
+// safe path
+function ignoreSMS() {
+  switchView("sms", "safe");
+}
+function goBack() {
+
+  switchView("fakeSite", "sms");
+
+}
+</script>
+
+</body>
+</html>

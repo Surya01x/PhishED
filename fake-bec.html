@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BEC Simulation</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+.fade {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.show {
+  opacity: 1;
+}
+
+.typing::after {
+  content: "|";
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+</style>
+
+</head>
+
+<body class="bg-gray-900 text-white flex justify-center items-center h-screen">
+
+<div class="w-[500px]">
+
+  <!-- Inbox -->
+  <div id="inbox" class="fade show">
+
+    <div class="bg-gray-800 p-4 rounded-t-lg flex justify-between">
+      <h2 class="text-xl font-semibold">📩 Company Inbox</h2>
+      <span class="text-gray-400 text-sm">1 New Email</span>
+    </div>
+
+    <div onclick="openMail()"
+      class="bg-gray-700 p-4 cursor-pointer hover:bg-gray-600 transition">
+
+      <p class="font-semibold">
+        ceo-finance@company-secure.com
+      </p>
+
+      <p class="text-sm text-gray-300 mt-1">
+        Urgent Wire Transfer Required
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- Email -->
+  <div id="mail" class="hidden fade">
+
+    <div class="bg-gray-800 p-4 rounded-t-lg">
+      <h2 class="text-xl font-semibold">
+        📧 Business Email
+      </h2>
+    </div>
+
+    <div class="bg-gray-700 p-5 rounded-b-lg">
+
+      <div class="mb-4 text-sm text-gray-300">
+        <p><strong>From:</strong> ceo-finance@company-secure.com</p>
+        <p><strong>Subject:</strong> Urgent Wire Transfer Required</p>
+      </div>
+
+      <div id="message"
+        class="text-gray-200 leading-7 typing">
+      </div>
+
+      <div id="actions" class="hidden mt-6 flex flex-col gap-3">
+
+        <button onclick="transferMoney()"
+          class="bg-red-600 py-3 rounded-lg hover:bg-red-700 transition">
+          Transfer Money
+        </button>
+
+        <button onclick="verifyRequest()"
+          class="bg-green-600 py-3 rounded-lg hover:bg-green-700 transition">
+          Verify Through Official Channel
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Warning -->
+  <div id="warning" class="hidden fade">
+
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+
+      <h2 class="text-3xl font-bold text-red-400 mb-4 text-center">
+        ⚠️ Business Email Compromise Detected
+      </h2>
+
+      <p class="text-gray-300 leading-7">
+        The email attempted to impersonate a company executive and pressured
+        you into making an urgent financial transaction without verification.
+      </p>
+
+      <div class="bg-gray-700 p-4 rounded-lg mt-5">
+
+        <h3 class="text-red-400 font-semibold mb-3">
+          🚩 Phishing Clues
+        </h3>
+
+        <ul class="list-disc ml-5 text-gray-300 space-y-2">
+          <li>Urgent payment request</li>
+          <li>Pressure to act quickly</li>
+          <li>Suspicious sender domain</li>
+          <li>No official verification process</li>
+        </ul>
+
+      </div>
+
+      <button onclick="restart()"
+        class="mt-6 bg-blue-600 px-6 py-3 rounded-lg hover:bg-blue-700 transition w-full">
+        Try Again
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Safe -->
+  <div id="safe" class="hidden fade">
+
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+
+      <h2 class="text-3xl font-bold text-green-400 mb-4 text-center">
+        ✅ Safe Decision
+      </h2>
+
+      <p class="text-gray-300 leading-7">
+        You chose to verify the request through official communication channels
+        instead of immediately transferring money.
+      </p>
+
+      <div class="bg-gray-700 p-4 rounded-lg mt-5">
+
+        <h3 class="text-green-400 font-semibold mb-3">
+          ✔ Good Security Practice
+        </h3>
+
+        <ul class="list-disc ml-5 text-gray-300 space-y-2">
+          <li>Always verify financial requests</li>
+          <li>Be cautious of urgent emails</li>
+          <li>Check sender domains carefully</li>
+          <li>Follow company approval procedures</li>
+        </ul>
+
+      </div>
+
+      <button onclick="window.close()"
+        class="mt-6 bg-blue-600 px-6 py-3 rounded-lg hover:bg-blue-700 transition w-full">
+         Exit Simulation
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+const emailText = `
+Hello,
+
+I am currently in a meeting and need an urgent wire transfer of ₹2,50,000 completed within the next 30 minutes for a confidential business deal.
+
+Do not inform the finance team yet. Reply once completed.
+
+Regards,
+CEO
+`;
+
+let i = 0;
+
+function switchView(from, to) {
+
+  document.getElementById(from).classList.remove("show");
+
+  setTimeout(() => {
+
+    document.getElementById(from).classList.add("hidden");
+
+    document.getElementById(to).classList.remove("hidden");
+
+    setTimeout(() => {
+      document.getElementById(to).classList.add("show");
+    }, 50);
+
+  }, 400);
+}
+
+function openMail() {
+
+  switchView("inbox", "mail");
+
+  setTimeout(typeMessage, 500);
+}
+
+function typeMessage() {
+
+  if (i < emailText.length) {
+
+    document.getElementById("message").innerHTML += emailText.charAt(i);
+
+    i++;
+
+    setTimeout(typeMessage, 20);
+
+  } else {
+
+    document.getElementById("actions").classList.remove("hidden");
+  }
+}
+
+function transferMoney() {
+  switchView("mail", "warning");
+}
+
+function verifyRequest() {
+  switchView("mail", "safe");
+}
+
+function restart() {
+  location.reload();
+}
+
+</script>
+
+</body>
+</html>

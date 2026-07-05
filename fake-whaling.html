@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Whaling Attack Simulation</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+.fade {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.show {
+  opacity: 1;
+}
+
+.typing::after {
+  content: "|";
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+</style>
+
+</head>
+
+<body class="bg-gray-900 text-white flex justify-center items-center h-screen">
+
+<div class="w-[550px]">
+
+  <!-- Inbox -->
+  <div id="inbox" class="fade show">
+
+    <div class="bg-gray-800 p-4 rounded-t-lg flex justify-between">
+      <h2 class="text-xl font-semibold">📩 Executive Inbox</h2>
+      <span class="text-gray-400 text-sm">Priority Email</span>
+    </div>
+
+    <div onclick="openMail()"
+      class="bg-gray-700 p-4 cursor-pointer hover:bg-gray-600 transition">
+
+      <p class="font-semibold">
+        board-director@company-board-secure.com
+      </p>
+
+      <p class="text-sm text-gray-300 mt-1">
+        Urgent Confidential Financial Request
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- Email -->
+  <div id="mail" class="hidden fade">
+
+    <div class="bg-gray-800 p-4 rounded-t-lg">
+      <h2 class="text-xl font-semibold">
+        🐋 Executive Email
+      </h2>
+    </div>
+
+    <div class="bg-gray-700 p-5 rounded-b-lg">
+
+      <div class="mb-4 text-sm text-gray-300">
+        <p><strong>From:</strong> board-director@company-board-secure.com</p>
+        <p><strong>Subject:</strong> Urgent Confidential Financial Request</p>
+      </div>
+
+      <div id="message"
+        class="text-gray-200 leading-7 typing">
+      </div>
+
+      <div id="actions" class="hidden mt-6 flex flex-col gap-3">
+
+        <button onclick="shareDocuments()"
+          class="bg-red-600 py-3 rounded-lg hover:bg-red-700 transition">
+          Send Confidential Documents
+        </button>
+
+        <button onclick="verifyExecutive()"
+          class="bg-green-600 py-3 rounded-lg hover:bg-green-700 transition">
+          Verify Request Through Official Channel
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Warning -->
+  <div id="warning" class="hidden fade">
+
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+
+      <h2 class="text-3xl font-bold text-red-400 mb-4 text-center">
+        ⚠️ Whaling Attack Detected
+      </h2>
+
+      <p class="text-gray-300 leading-7">
+        This attack specifically targeted high-level executives by impersonating a trusted board member and requesting sensitive financial information urgently.
+      </p>
+
+      <div class="bg-gray-700 p-4 rounded-lg mt-5">
+
+        <h3 class="text-red-400 font-semibold mb-3">
+          🚩 Warning Signs
+        </h3>
+
+        <ul class="list-disc ml-5 text-gray-300 space-y-2">
+          <li>Impersonation of senior executives</li>
+          <li>Urgent confidential request</li>
+          <li>Pressure to bypass standard procedures</li>
+          <li>Suspicious sender domain</li>
+        </ul>
+
+      </div>
+
+      <button onclick="window.close()"
+        class="mt-6 bg-red-600 px-6 py-3 rounded-lg hover:bg-red-700 transition w-full">
+        Exit Simulation
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Safe -->
+  <div id="safe" class="hidden fade">
+
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+
+      <h2 class="text-3xl font-bold text-green-400 mb-4 text-center">
+        ✅ Safe Decision
+      </h2>
+
+      <p class="text-gray-300 leading-7">
+        You chose to verify the executive request through official company communication channels before sharing sensitive information.
+      </p>
+
+      <div class="bg-gray-700 p-4 rounded-lg mt-5">
+
+        <h3 class="text-green-400 font-semibold mb-3">
+          ✔ Good Security Practice
+        </h3>
+
+        <ul class="list-disc ml-5 text-gray-300 space-y-2">
+          <li>Verify executive requests independently</li>
+          <li>Never bypass security procedures</li>
+          <li>Check sender email domains carefully</li>
+          <li>Protect confidential company information</li>
+        </ul>
+
+      </div>
+
+      <button onclick="window.close()"
+        class="mt-6 bg-red-600 px-6 py-3 rounded-lg hover:bg-red-700 transition w-full">
+        Exit Simulation
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+const emailText = `
+Hello,
+
+I need the latest confidential financial reports and acquisition documents sent immediately for an urgent board-level discussion.
+
+Do not involve the finance department at this moment as this matter is highly confidential.
+
+Please send the files within the next 20 minutes.
+
+Regards,
+Board Director
+`;
+
+let i = 0;
+
+function switchView(from, to) {
+
+  document.getElementById(from).classList.remove("show");
+
+  setTimeout(() => {
+
+    document.getElementById(from).classList.add("hidden");
+
+    document.getElementById(to).classList.remove("hidden");
+
+    setTimeout(() => {
+      document.getElementById(to).classList.add("show");
+    }, 50);
+
+  }, 400);
+}
+
+function openMail() {
+
+  switchView("inbox", "mail");
+
+  setTimeout(typeMessage, 500);
+}
+
+function typeMessage() {
+
+  if (i < emailText.length) {
+
+    document.getElementById("message").innerHTML += emailText.charAt(i);
+
+    i++;
+
+    setTimeout(typeMessage, 20);
+
+  } else {
+
+    document.getElementById("actions").classList.remove("hidden");
+  }
+}
+
+function shareDocuments() {
+  switchView("mail", "warning");
+}
+
+function verifyExecutive() {
+  switchView("mail", "safe");
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smishing Simulation</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+.fade {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.show {
+  opacity: 1;
+}
+
+.phone {
+  background: #111827;
+  border: 10px solid #1f2937;
+  border-radius: 35px;
+}
+</style>
+
+</head>
+
+<body class="bg-gray-900 text-white flex justify-center items-center h-screen">
+
+<div class="phone w-[350px] h-[650px] p-4 shadow-2xl">
+
+  <!-- Top -->
+  <div class="flex justify-between items-center mb-5">
+    <p class="text-sm text-gray-400">9:41 AM</p>
+    <p class="text-sm text-gray-400">📶 🔋</p>
+  </div>
+
+  <!-- SMS Inbox -->
+  <div id="sms" class="fade show">
+
+    <h2 class="text-xl font-semibold mb-4 text-center">
+      📱 Messages
+    </h2>
+
+    <div class="bg-gray-800 p-4 rounded-2xl shadow-lg">
+
+      <p class="text-green-400 font-semibold">
+        BANK-ALERT
+      </p>
+
+      <p class="text-gray-300 mt-3 leading-7">
+        Your bank account has been temporarily restricted due to suspicious activity.
+        Verify immediately to avoid suspension:
+      </p>
+
+      <p class="text-blue-400 break-all mt-2">
+        http://secure-bank-verification-alert.com
+      </p>
+
+      <p class="text-red-400 text-sm mt-3">
+        Expires in 15 minutes.
+      </p>
+
+      <div class="mt-6 flex flex-col gap-3">
+
+        <button onclick="showWarning()"
+  class="bg-red-600 py-3 rounded-lg hover:bg-red-700 transition">
+  Open Verification Link
+</button>
+
+        <button onclick="ignoreSMS()"
+          class="bg-green-600 py-3 rounded-lg hover:bg-green-700 transition">
+          Ignore & Verify Officially
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Fake Website -->
+  <div id="fakeSite" class="hidden fade">
+
+    <!-- browser bar -->
+    <div class="bg-gray-800 p-2 rounded-t-lg text-sm text-gray-300">
+      🔒 secure-bank-verification-alert.com
+    </div>
+
+    <div class="bg-gray-700 p-5 rounded-b-lg">
+
+      <h2 class="text-xl font-semibold mb-5 text-center">
+        🏦 Account Verification
+      </h2>
+
+      <input type="text"
+        placeholder="Account Number"
+        class="w-full p-3 rounded mb-3 text-black">
+
+      <input type="password"
+        placeholder="OTP / PIN"
+        class="w-full p-3 rounded mb-4 text-black">
+
+      <button onclick="submitData()"
+        class="w-full bg-yellow-500 text-black py-3 rounded-lg hover:bg-yellow-600 transition">
+        Verify Account
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Warning -->
+  <div id="warning" class="hidden fade">
+
+    <div class="bg-gray-800 p-5 rounded-2xl shadow-lg">
+
+      <h2 class="text-3xl font-bold text-red-400 mb-4 text-center">
+        ⚠️ Smishing Attack Detected
+      </h2>
+
+      <p class="text-gray-300 leading-7">
+        This SMS attempted to create urgency and redirect you to a fake banking website designed to steal your account information and OTP.
+      </p>
+
+      <div class="bg-gray-700 p-4 rounded-lg mt-5">
+
+        <h3 class="text-red-400 font-semibold mb-3">
+          🚩 Warning Signs
+        </h3>
+
+        <ul class="list-disc ml-5 text-gray-300 space-y-2">
+          <li>Urgent account suspension warning</li>
+          <li>Suspicious external link</li>
+          <li>Requested OTP and sensitive information</li>
+          <li>Fake banking domain</li>
+        </ul>
+
+      </div>
+
+      <button onclick="window.close()"
+        class="mt-6 bg-red-600 px-6 py-3 rounded-lg hover:bg-red-700 transition w-full">
+        Exit Simulation
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Safe -->
+  <div id="safe" class="hidden fade">
+
+    <div class="bg-gray-800 p-5 rounded-2xl shadow-lg">
+
+      <h2 class="text-3xl font-bold text-green-400 mb-4 text-center">
+        ✅ Safe Decision
+      </h2>
+
+      <p class="text-gray-300 leading-7">
+        You avoided clicking the suspicious link and chose to verify your account using the official banking app or website.
+      </p>
+
+      <div class="bg-gray-700 p-4 rounded-lg mt-5">
+
+        <h3 class="text-green-400 font-semibold mb-3">
+          ✔ Good Security Practice
+        </h3>
+
+        <ul class="list-disc ml-5 text-gray-300 space-y-2">
+          <li>Never trust urgent SMS links</li>
+          <li>Verify through official apps/websites</li>
+          <li>Do not share OTPs or PINs</li>
+          <li>Check URLs carefully before entering details</li>
+        </ul>
+
+      </div>
+
+      <button onclick="window.close()"
+        class="mt-6 bg-red-600 px-6 py-3 rounded-lg hover:bg-red-700 transition w-full">
+        Exit Simulation
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+function switchView(from, to) {
+
+  document.getElementById(from).classList.remove("show");
+
+  setTimeout(() => {
+
+    document.getElementById(from).classList.add("hidden");
+
+    document.getElementById(to).classList.remove("hidden");
+
+    setTimeout(() => {
+      document.getElementById(to).classList.add("show");
+    }, 50);
+
+  }, 400);
+}
+
+function clickLink() {
+  switchView("sms", "fakeSite");
+}
+
+function submitData() {
+  switchView("fakeSite", "warning");
+}
+
+function ignoreSMS() {
+  switchView("sms", "safe");
+}
+function showWarning() {
+  switchView("sms", "warning");
+}
+</script>
+
+</body>
+</html>

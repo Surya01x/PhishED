@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Amazon Free Gift Card Offer - pishEd</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .modal-overlay {
+      display: none;  
+      position: fixed;
+      inset: 0;  
+      background: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .modal-overlay.show {
+      display: flex;
+      opacity: 1;
+    }
+    .modal-content-box {
+      background: #fff;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      max-width: 90%;
+      width: 450px;
+      text-align: center;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    }
+    .modal-overlay.show .modal-content-box {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .popup-animation {
+      animation: fadeIn 0.6s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <header class="bg-orange-500 text-white text-center py-12 px-4 shadow-md">
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-3">🎁 Amazon Free ₹10,000 Gift Card</h1>
+    <p class="text-lg md:text-xl font-light mt-2">Only a few cards left! Act fast!</p>
+  </header>
+
+  <main class="flex-grow flex flex-col items-center justify-center p-4">
+    <div class="container text-center py-8">
+      <img src="amazon.jpg" alt="Gift Card" class="w-64 md:w-80 border-4 border-red-500 border-dashed rounded-xl transition-transform duration-300 hover:scale-105 shadow-lg mb-8">
+      <div class="flex flex-wrap justify-center gap-3">
+        <div class="bg-yellow-400 text-red-700 font-bold px-4 py-2 rounded-md shadow-md">100% FREE!</div>
+        <div class="bg-yellow-400 text-red-700 font-bold px-4 py-2 rounded-md shadow-md">Limited Time!</div>
+        <div class="bg-yellow-400 text-red-700 font-bold px-4 py-2 rounded-md shadow-md">No Verification Needed!</div>
+      </div>
+    </div>
+  </main>
+
+   <div id="global-feedback-modal-overlay" class="modal-overlay">
+    <div class="modal-content-box bg-yellow-50 border-2 border-yellow-500 text-orange-700 popup-animation">
+      <h3 id="modal-title" class="text-3xl font-bold mb-4">🎉 Congratulations!</h3>
+      <p id="modal-message" class="text-gray-700 mb-6">Click the button below to claim your ₹10,000 Amazon gift card.</p>
+      <button id="gift-btn"
+        class="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold text-lg hover:bg-orange-700 transition-colors-transform hover:translate-y-[-2px] hover:shadow-md">
+        Claim Now
+      </button>
+    </div>
+  </div>
+
+  <script>
+     window.onload = function() {
+      setTimeout(function() {
+        document.getElementById('global-feedback-modal-overlay').classList.add('show');
+      }, 1500);
+    };
+
+     document.addEventListener('DOMContentLoaded', function() {
+  var giftBtn = document.getElementById('gift-btn');
+  giftBtn.onclick = function() {
+    document.getElementById('modal-title').textContent = '🚨 Warning: Phishing Scam!';
+    document.getElementById('modal-message').textContent = 'This is a simulated "too good to be true" offer. Never click suspicious free offers or enter personal details on such pages.';
+    giftBtn.textContent = 'Got It!';
+    giftBtn.onclick = function() {
+      window.close();
+    };
+  };
+});
+
+  </script>
+</body>
+</html>
