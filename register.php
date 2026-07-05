@@ -60,7 +60,7 @@ if (isset($_POST['register'])) {
                     $mail->SMTPSecure = "tls";
                     $mail->Port       = 587;
 
-                    $mail->setFrom("YOUR_GMAIL@gmail.com", "PhishED");
+                    $mail->setFrom("YOUR_GMAIL@gmail.com", "PhishED"); // // 🔁 CHANGE YOUR_GMAIL@gmail.com
                     $mail->addAddress($email, $username);
 
                     $verifyLink = "http://localhost/PhishED-main/PhishED-main/verify.php?token=$token";
