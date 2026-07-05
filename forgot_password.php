@@ -47,7 +47,7 @@ if (isset($_POST['email'])) {
                 ]
             ];
 
-            $mail->setFrom("suryavishnux4@gmail.com", "PhishED");
+            $mail->setFrom("YOUR_GMAIL@gmail.com", "PhishED"); // 🔁 CHANGE YOUR_GMAIL@gmail.com
             $mail->addAddress($email, $user['username']);
 
             $link = "http://localhost/PhishED-main/PhishED-main/reset_password.php?token=" . urlencode($token);
